@@ -9,12 +9,12 @@ from pathlib import Path
 import pytest
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
-HERMES_ROOT = Path(os.environ.get("HERMES_AGENT_ROOT", ""))
+HERMES_ROOT = os.environ.get("HERMES_AGENT_ROOT")
 
 
 @pytest.fixture
 def hermes_providers(monkeypatch: pytest.MonkeyPatch):
-    if not HERMES_ROOT.is_dir():
+    if not HERMES_ROOT or not (Path(HERMES_ROOT) / "providers" / "base.py").is_file():
         pytest.skip("set HERMES_AGENT_ROOT to a Hermes Agent checkout")
 
     monkeypatch.syspath_prepend(str(HERMES_ROOT))
@@ -31,7 +31,8 @@ def test_plugin_registers_through_hermes_user_discovery(
 ):
     plugin_dir = tmp_path / "plugins" / "netmind-provider"
     shutil.copytree(
-        PLUGIN_ROOT, plugin_dir, ignore=shutil.ignore_patterns("tests", "__pycache__")
+        PLUGIN_ROOT, plugin_dir,
+        ignore=shutil.ignore_patterns("tests", "__pycache__", ".git", ".pytest_cache", ".ruff_cache", ".env"),
     )
 
     layer = hermes_providers._HomeLayer()
