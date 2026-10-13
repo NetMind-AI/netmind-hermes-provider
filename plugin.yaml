@@ -1,0 +1,5 @@
+name: netmind-provider
+kind: model-provider
+version: 1.0.0
+description: NetMind OpenAI-compatible model provider
+author: NetMind
